@@ -75,7 +75,7 @@ export default function UserList() {
   }, [users, search]);
 
   return (
-    <MainCard
+      <MainCard
       title={
         <Grid container alignItems="center" spacing={gridSpacing}>
           <Grid item xs={12}>
@@ -98,6 +98,7 @@ export default function UserList() {
               <TableHead>
                 <TableRow>
                   <TableCell align="center">S No.</TableCell>
+                  <TableCell align="center">Membership No.</TableCell>
                   <TableCell align="center">Name</TableCell>
                   <TableCell align="center">Email</TableCell>
                   <TableCell align="center">Gender</TableCell>
@@ -122,6 +123,7 @@ export default function UserList() {
                         <TableCell align="center">
                           {page * rowsPerPage + index + 1}
                         </TableCell>
+                         <TableCell align="center">{user?.membershipNumber || "-"}</TableCell>
                         <TableCell align="center">
                           {user?.firstName + " " + user?.lastName}
                         </TableCell>
