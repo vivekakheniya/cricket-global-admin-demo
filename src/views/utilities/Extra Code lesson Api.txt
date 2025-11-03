@@ -1,0 +1,57 @@
+
+      // const existingLessons = JSON.parse(localStorage.getItem("lesson")) || [];
+      // let updatedLessons;
+
+      // if (id) {
+      //   updatedLessons = existingLessons.map((lesson, index) =>
+      //     index + 1 === parseInt(id) ? updatedFormData : lesson
+      //   );
+      // } else {
+      //   updatedLessons = [...existingLessons, updatedFormData];
+      // }
+
+      // localStorage.setItem("lesson", JSON.stringify(updatedLessons));
+
+      // toast.success(
+      //   id ? "Lesson updated successfully" : "Lesson added successfully"
+      // );
+
+----->handleSubmit()---->
+    // };
+
+    // if (audioFile) {
+    //   reader.readAsDataURL(audioFile);
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // useEffect(() => {
+  //   if (id) {
+  //     const storedLessons = JSON.parse(localStorage.getItem("lesson")) || [];
+  //     const lessonToEdit = storedLessons.find(
+  //       (_, index) => index + 1 === parseInt(id)
+  //     );
+  //     if (lessonToEdit) {
+  //       setFormData(lessonToEdit);
+  //       if (lessonToEdit.audio) {
+  //         setAudioFile(lessonToEdit.audio);
+  //         setAudioURL(lessonToEdit.audio); // Store audio directly
+  //       }
+  //     }
+  //   }
+  // }, [id]);
+  // Fetch lesson details if editing
