@@ -24,8 +24,8 @@ function AddMembership() {
     name: "",
     description: "",
     price: "",
-    durationValue: "",
-    durationUnit: "days",
+    durationValue: "0",
+    durationUnit: "lifetime",
     isActive: true,
   });
 
@@ -39,10 +39,16 @@ function AddMembership() {
         setFormData((prev) => ({ ...prev, [name]: value }));
       }
     }
-    else if (name === "durationInDays") {
+    else if (name === "durationUnit") {
       // Allow: number + optional space + unit (day(s), month(s), year(s))
-      if (/^\d*\s*(day|days|month|months|year|years)?$/i.test(value) || value === "") {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+      if (/^\d*\s*(day|days|month|months|year|years|lifetime)?$/i.test(value) || value === "") {
+        // setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({
+          ...prev,
+          durationUnit: value,
+          durationValue: value === "lifetime" ? "0" : prev.durationValue, // clear value if lifetime
+        }));
+        return;
       }
     }
     else {
@@ -62,22 +68,31 @@ function AddMembership() {
     if (!formData.description)
       newErrors.description = "Description is required";
     if (!formData.price) newErrors.price = "Price is required";
-    if (!formData.durationInDays)
-      newErrors.durationInDays = "Duration is required";
+    if (!formData.durationUnit)
+      newErrors.durationUnit = "Duration unit is required";
+    if (!formData.durationValue && formData.durationUnit !== "lifetime") {
+      newErrors.durationValue = "Duration value is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
 
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const isValid = validateForm();
+    if (!isValid) {
+      console.log("id--------------", id, formData);
+      toast.error("Please fill all required fields correctly");
+      return;
+    }
     try {
       if (id) {
         // Update existing membership
-        const response = await membershipInstance.UpdateMembershipById({id:id, data:formData});
+        const response = await membershipInstance.UpdateMembershipById({ id: id, data: formData });
         console.log("UpdateMembershipById--------------", response)
         if (response?.status === 200) {
           toast.success("Membership updated successfully!");
@@ -179,39 +194,22 @@ function AddMembership() {
               }}
             />
           </Grid>
-
-
-          <Grid item xs={4}>
-            <InputLabel required>Duration</InputLabel>
+          <Grid item xs={2}>
+            <InputLabel required>Duration (digit)</InputLabel>
             <TextField
               fullWidth
               type="number"
               name="durationValue"
               value={formData.durationValue}
               onChange={handleChange}
+              placeholder="Enter duration"
+              disabled={formData.durationUnit === "lifetime"} // lock value at 0
               error={!!errors.durationValue}
-              helperText={errors.durationValue}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <TextField
-                      select
-                      name="durationUnit"
-                      value={formData.durationUnit}
-                      onChange={handleChange}
-                      variant="standard"
-                      sx={{
-                        minWidth: 80,
-                        "& .MuiInputBase-input": { padding: "4px 8px" },
-                      }}
-                    >
-                      <MenuItem value="days">Days</MenuItem>
-                      <MenuItem value="months">Months</MenuItem>
-                      <MenuItem value="years">Years</MenuItem>
-                    </TextField>
-                  </InputAdornment>
-                ),
-              }}
+              helperText={
+                formData.durationUnit === "lifetime"
+                  ? "auto set for lifetime"
+                  : errors.durationValue
+              }
               sx={{
                 "& input[type=number]": {
                   MozAppearance: "textfield",
@@ -227,7 +225,27 @@ function AddMembership() {
               }}
             />
           </Grid>
-         {id && <Grid item xs={4}>
+
+          <Grid item xs={2}>
+            <InputLabel required>Duration (Unit)</InputLabel>
+            <TextField
+              select
+              fullWidth
+              name="durationUnit"
+              value={formData.durationUnit}
+              onChange={handleChange}
+              error={!!errors.durationUnit}
+              helperText={errors.durationUnit}
+            >
+              <MenuItem value="days">Days</MenuItem>
+              <MenuItem value="months">Months</MenuItem>
+              <MenuItem value="years">Years</MenuItem>
+              <MenuItem value="lifetime">Lifetime</MenuItem>
+            </TextField>
+          </Grid>
+
+
+          {id && <Grid item xs={4}>
             <InputLabel required>Status</InputLabel>
             <TextField
               select

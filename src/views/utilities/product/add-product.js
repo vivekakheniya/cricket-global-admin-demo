@@ -252,15 +252,22 @@ export default function ProductForm() {
               sx={{
                 position: "relative",
                 width: "100%",
-                height: 120,
+                height: 140,
                 border: "1px solid #ccc",
                 borderRadius: 2,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#fafafa",
                 overflow: "hidden",
                 cursor: "pointer",
+                cursor: "pointer",
+                scrollBehavior: "smooth",
+                "&::-webkit-scrollbar": { height: 4 },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#bbb",
+                  borderRadius: 3,
+                },
+                backgroundColor: "#f8fafc",
               }}
               onClick={() =>
                 document.getElementById("coverImageInput")?.click()
@@ -293,7 +300,7 @@ export default function ProductForm() {
           </Grid>
 
           {/* Product Images */}
-          <Grid item xs={6}>
+          {/* <Grid item xs={6}>
             <InputLabel>Product Images</InputLabel>
             <Box display="flex" flexWrap="wrap" gap={2}>
               {formData.images.map((img, index) => (
@@ -301,12 +308,26 @@ export default function ProductForm() {
                   key={index}
                   sx={{
                     position: "relative",
-                    width: 80,
-                    height: 80,
+                    width: "100%",
+                    height: 140,
+                    border: "1px solid #ccc",
                     borderRadius: 2,
-                    overflow: "hidden",
-                    border: "1px solid #ddd",
+                    overflowX: "auto",
+                    overflowY: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    p: 1,
+                    cursor: "pointer",
+                    scrollBehavior: "smooth",
+                    "&::-webkit-scrollbar": { height: 4 },
+                    "&::-webkit-scrollbar-thumb": {
+                      backgroundColor: "#bbb",
+                      borderRadius: 3,
+                    },
+                    backgroundColor: "#f8fafc",
                   }}
+                  onClick={() => document.getElementById("productimages")?.click()}
                 >
                   <img
                     src={img}
@@ -360,6 +381,105 @@ export default function ProductForm() {
                 onChange={handleImageUpload}
               />
             </Box>
+          </Grid> */}
+          <Grid item xs={12} sm={6}>
+            <InputLabel required>Product Images</InputLabel>
+
+            <Box
+              sx={{
+                position: "relative",
+                width: "100%",
+                height: 140,
+                border: "1px solid #ccc",
+                borderRadius: 2,
+                overflowX: "auto",
+                overflowY: "hidden",
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                p: 1,
+                cursor: "pointer",
+                scrollBehavior: "smooth",
+                "&::-webkit-scrollbar": { height: 4 },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#bbb",
+                  borderRadius: 3,
+                },
+                backgroundColor: "#f8fafc",
+              }}
+              onClick={() => document.getElementById("productimages")?.click()}
+            >
+              {/* Uploaded Images */}
+              {formData.images?.length > 0 ? (
+                formData.images.map((img, idx) => (
+                  <Box
+                    key={idx}
+                    sx={{
+                      position: "relative",
+                      minWidth: 120,
+                      height: 120,
+                      flexShrink: 0,
+                      borderRadius: 2,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt={`Event ${idx}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageRemove(idx);
+                      }}
+                      sx={{
+                        position: "absolute",
+                        top: 4,
+                        right: 4,
+                        background: "#fff",
+                        "&:hover": { background: "#f8d7da" },
+                      }}
+                    >
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ))
+              ) : (
+                <Typography
+                  color="textSecondary"
+                  sx={{
+                    textAlign: "center",
+                    width: "100%",
+                  }}
+                >
+                  {uploading ? "Uploading..." : "Click to upload Product images"}
+                </Typography>
+              )}
+
+              {/* Hidden Input */}
+              <input
+                hidden
+                id="productimages"
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, "images")}
+              />
+            </Box>
+
+            {errors.images && (
+              <Typography color="error" variant="caption">
+                {errors.images}
+              </Typography>
+            )}
           </Grid>
 
           {/* Description */}
@@ -375,6 +495,7 @@ export default function ProductForm() {
               placeholder="Enter product description"
               error={!!errors.description}
               helperText={errors.description}
+               sx={{backgroundColor:"f8fafc"}}
             />
           </Grid>
 

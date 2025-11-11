@@ -75,7 +75,7 @@ export default function UserList() {
   }, [users, search]);
 
   return (
-      <MainCard
+    <MainCard
       title={
         <Grid container alignItems="center" spacing={gridSpacing}>
           <Grid item xs={12}>

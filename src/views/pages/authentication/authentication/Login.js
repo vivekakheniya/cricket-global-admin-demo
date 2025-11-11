@@ -9,6 +9,8 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  InputAdornment,
+  IconButton
 } from "@mui/material";
 import toast from "react-hot-toast";
 
@@ -19,6 +21,8 @@ import Logo1 from "../../../../assets/images/cricket-logo.webp";
 import authInstance from "../../../../apis/auth/auth.api"; // <-- adjust path
 import { useDispatch } from "react-redux";
 import { updateToken, updateUser } from "redux/redux-slice/user.slice";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 const Login = () => {
   const theme = useTheme();
@@ -29,7 +33,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +43,7 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   // basic validation
   const validateForm = () => {
@@ -133,6 +138,14 @@ const Login = () => {
                         onChange={handleChange}
                         error={!!errors.email}
                         helperText={errors.email}
+                        sx={{
+                          "& .MuiInputBase-root": {
+                            backgroundColor: "#f9fbff", // default background
+                          },
+                          "& .MuiInputBase-root.Mui-focused": {
+                            backgroundColor: "#eaf3ff", // same as password focus color
+                          },
+                        }}
                       />
                     </Grid>
 
@@ -142,11 +155,24 @@ const Login = () => {
                         fullWidth
                         label="Password"
                         name="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         value={formData.password}
                         onChange={handleChange}
                         error={!!errors.password}
                         helperText={errors.password}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                onClick={togglePasswordVisibility}
+                                edge="end"
+                                aria-label="toggle password visibility"
+                              >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     </Grid>
 
@@ -157,7 +183,7 @@ const Login = () => {
                         type="submit"
                         variant="contained"
                         sx={{
-                          paddingY:"0.6rem",
+                          paddingY: "0.6rem",
                           backgroundColor: theme.palette.secondary.main,
                           "&:hover": {
                             backgroundColor: theme.palette.secondary.dark,

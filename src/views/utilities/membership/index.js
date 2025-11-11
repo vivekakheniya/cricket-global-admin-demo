@@ -221,7 +221,7 @@ export default function Membership() {
                             <TableCell align="center">{index + 1}</TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">
-                              {row.durationValue + " " + row.durationUnit}
+                              {(row?.durationValue!= 0 ?  row.durationValue:"") + " " + row.durationUnit}
                             </TableCell>
                             <TableCell align="center">€{row.price}</TableCell>
                             <TableCell align="center">

@@ -158,8 +158,8 @@ export default function ProductList() {
                             src={product.coverImage || "/placeholder.jpg"}
                             alt={product.name}
                             style={{
-                              width: 180,
-                              height: 110,
+                              width: 50,
+                              height: 50,
                               objectFit: "cover",
                               borderRadius: 6,
                             }}
