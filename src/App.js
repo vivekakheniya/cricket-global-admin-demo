@@ -12,7 +12,7 @@ import themes from "themes";
 // project imports
 import NavigationScroll from "layout/NavigationScroll";
 import { Toaster } from "react-hot-toast";
-import { Provider } from "react-redux";
+
 // ==============================|| APP ||============================== //
 
 const App = () => {

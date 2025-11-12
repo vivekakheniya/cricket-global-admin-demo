@@ -11,7 +11,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  Typography,
+ 
 } from "@mui/material";
 import { toast } from "react-hot-toast";
 import MainCard from "ui-component/cards/MainCard";
@@ -19,13 +19,14 @@ import { gridSpacing } from "store/constant";
 import UsersApi from "apis/users.api";
 
 export default function TransactionHistory() {
-  const userApi = new UsersApi();
+   const userApi = useMemo(() => new UsersApi(), []);
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalCount, setTotalCount] = useState(0);
+  // const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
 
   const fetchTransactions = useCallback(async () => {
     try {
@@ -39,7 +40,7 @@ export default function TransactionHistory() {
         const data = response?.data?.data || [];
         const pagination = response?.data?.pagination;
         setTransactions(data);
-        setTotalCount(pagination?.totalRecords || data.length);
+        // setTotalCount(pagination?.totalRecords || data.length);
       } else {
         toast.error("Failed to fetch transactions");
         setTransactions([]);
@@ -50,6 +51,7 @@ export default function TransactionHistory() {
       setTransactions([]);
     } finally {
       setIsLoading(false);
+
     }
   }, [page, rowsPerPage]);
 
