@@ -37,8 +37,8 @@ function AddEventTickets() {
     locality: "",
     city: "",
     state: "",
-    tickets: [{ name: "adult", price: "", quantity: "" },
-    { name: "child", price: "", quantity: "" }
+    tickets: [{ type: "adult", price: "", quantity: "" },
+    { type: "child", price: "", quantity: "" }
     ],
     maxParticipants: "",
     eventType: "",//paid
@@ -100,7 +100,7 @@ function AddEventTickets() {
   const addTicket = () =>
     setFormData((prev) => ({
       ...prev,
-      tickets: [...prev.tickets, { name: "", price: 0, quantity: 0 }],
+      tickets: [...prev.tickets, { type: "", price: 0, quantity: 0 }],
     }));
 
   const removeTicket = (index) => {
@@ -151,22 +151,7 @@ function AddEventTickets() {
     setFormData((prev) => ({ ...prev, images: updated }));
   };
 
-  // Validation
-  // const validateForm = () => {
-  //   const newErrors = {};
-  //   if (!formData.title) newErrors.title = "Event title is required";
-  //   if (!formData.category) newErrors.category = "Category is required";
-  //   if (!formData.bannerImage) newErrors.bannerImage = "Banner image is required";
-  //   if (!formData.venue) newErrors.venue = "Venue is required";
-  //   if (!formData.locality) newErrors.locality = "Address is required";
-  //   if (!formData.startDate) newErrors.startDate = "Start date is required";
-  //   if (!formData.endDate) newErrors.endDate = "End date is required";
-  //   if (!formData.description) newErrors.description = "Description is required";
-  //   if (!formData.images || formData.images.length === 0)
-  //     newErrors.images = "Please upload at least one event image";
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
+
   // Validation
   const validateForm = () => {
     const newErrors = {};
@@ -210,6 +195,7 @@ function AddEventTickets() {
     }
 
     try {
+      console.log("Submitting formData:", formData);
       const response = id
         ? await ticketsInstance.UpdateEventById({ id, data: formData })
         : await ticketsInstance.CreateTicketsForEvent(formData);
@@ -337,24 +323,39 @@ function AddEventTickets() {
           {/* Max Participants */}
           <Grid item xs={12} sm={6}>
             <InputLabel>No. of Seats</InputLabel>
-            {/* <TextField
-              fullWidth
-              type="number"
-              name="maxParticipants"
-              value={formData.maxParticipants}
-              onChange={handleChange}
-              placeholder="Enter max seats"
-            /> */}
             <TextField
               fullWidth
-              type="number"
+              type="text"
+              name="maxParticipants"
+              value={formData.maxParticipants}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                // ✅ Allow only digits (no spaces, no letters)
+                if (/^\d*$/.test(value)) {
+                  handleChange(e);
+                }
+              }}
+              placeholder="Enter max seats"
+              error={!!errors.maxParticipants}
+              helperText={errors.maxParticipants}
+              inputProps={{
+                inputMode: "numeric", // shows numeric keyboard on mobile
+                pattern: "[0-9]*",
+              }}
+            />
+
+            {/* <TextField
+              fullWidth
+              type="text"
               name="maxParticipants"
               value={formData.maxParticipants}
               onChange={handleChange}
               placeholder="Enter max seats"
               error={!!errors.maxParticipants}
               helperText={errors.maxParticipants}
-            />
+            />  */}
+
           </Grid>
 
           {/* Venue Details */}
@@ -470,38 +471,96 @@ function AddEventTickets() {
               >
                 <Grid item xs={12}>
                   <Typography fontWeight="bold" sx={{ mb: 1 }}>
-                    {ticket.name === "adult" ? "Adult Ticket" : "Child Ticket"}
+                    {ticket?.type === "adult" ? "Adult Ticket" : "Child Ticket"}
                   </Typography>
                 </Grid>
-
+                {/* Ticket Seats */}
                 <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    label="Seats"
+                    value={ticket.quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // ✅ Allow only digits or empty string
+                      if (value === "" || /^[0-9\b]+$/.test(value)) {
+                        handleTicketChange(idx, "quantity", value);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // 🚫 Prevent unwanted characters
+                      if (["e", "E", "+", "-", "."].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    placeholder="Enter seats"
+                    InputProps={{
+                      inputMode: "numeric",
+                    }}
+                  />
+                </Grid>
+
+                {/* Ticket Price */}
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    label="Price (€)"
+                    value={ticket.price}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "" || /^[0-9\b]+$/.test(value)) {
+                        handleTicketChange(idx, "price", value);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (["e", "E", "+", "-", "."].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    placeholder="Enter ticket price"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">€</InputAdornment>
+                      ),
+                      inputMode: "numeric",
+                    }}
+                  />
+                </Grid>
+
+
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="number"
                     label="Price (€)"
                     value={ticket.price}
                     onChange={(e) =>
-                      handleTicketChange(idx, "price", e.target.value)
+                      handleTicketChange(idx, "price", Number(e.target.value))
                     }
+                    
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">€</InputAdornment>
                       ),
                     }}
                   />
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="number"
                     label="Seats"
                     value={ticket.quantity}
                     onChange={(e) =>
-                      handleTicketChange(idx, "quantity", e.target.value)
+                      handleTicketChange(idx, "quantity", Number(e.target.value))
                     }
                   />
-                </Grid>
+                 
+
+                </Grid> */}
               </Grid>
             ))}
           </Grid>

@@ -37,6 +37,7 @@ class TicketsForEvent extends HttpClient {
   DeleteTicketsForEventConfig = ApiRoutes.TicketsForEvent.DeleteEvent;
 
   CreateTicketsForEvent = async (data) => {
+    console.log("CreateTicketsForEvent data----------------", data);
     return this.instance({
       method: this.CreateTicketsForEventConfig.Method,
       url: this.CreateTicketsForEventConfig.Endpoint,

@@ -89,6 +89,8 @@ export default function TicketList() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  const [deleteId, setDeleteId] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -218,8 +220,8 @@ export default function TicketList() {
 
                       const priceMatch = Array.isArray(row.tickets)
                         ? row.tickets.some((t) =>
-                            t?.price?.toString()?.toLowerCase()?.includes(query)
-                          )
+                          t?.price?.toString()?.toLowerCase()?.includes(query)
+                        )
                         : false;
 
                       return (

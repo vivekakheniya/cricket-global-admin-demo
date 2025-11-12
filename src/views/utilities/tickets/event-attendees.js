@@ -50,7 +50,7 @@ export default function EventAttendeesList() {
         page: 1,
         limit: 100,
       });
-
+        console.log("All Events Response:", response?.data);
       if (response?.data?.status === "Success") {
         const data = response?.data?.data || [];
         setEvents(data);
@@ -219,7 +219,7 @@ export default function EventAttendeesList() {
                             {user.totalAmount || "—"}
                           </TableCell>
                           <TableCell align="center">
-                            {user.totalTicketPurchased || "—"}
+                            {user?.totalTicketPurchased?.reduce((sum, value) => sum + value, 0) || "—"}
                           </TableCell>
                           <TableCell align="center">
                             {user.purchasedDate
