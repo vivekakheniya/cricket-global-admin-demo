@@ -7,6 +7,8 @@ import {
   InputAdornment,
   IconButton,
   Typography,
+  FormControl,
+  Select,
 } from "@mui/material";
 import InputLabel from "ui-component/extended/Form/InputLabel";
 import MainCard from "ui-component/cards/MainCard";
@@ -35,7 +37,9 @@ function AddEventTickets() {
     locality: "",
     city: "",
     state: "",
-    tickets: [{ name: "", price: "", quantity: "" }],
+    tickets: [{ name: "adult", price: "", quantity: "" },
+    { name: "child", price: "", quantity: "" }
+    ],
     maxParticipants: "",
     eventType: "",//paid
     images: [],
@@ -43,6 +47,7 @@ function AddEventTickets() {
 
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [ticketErrors, setTicketErrors] = useState({});
 
   const categories = [
     { value: "Sports", label: "Sports" },
@@ -69,7 +74,26 @@ function AddEventTickets() {
   const handleTicketChange = (index, field, value) => {
     const updatedTickets = [...formData.tickets];
     updatedTickets[index][field] =
-      field === "price" || field === "quantity" ? parseFloat(value) || 0 : value;
+      value;
+    console.log("Updating tickets:", updatedTickets);
+    const totalSeats = updatedTickets.reduce(
+      (sum, ticket) => sum + (Number(ticket.quantity) || 0),
+      0
+    );
+
+    //  Live validation
+    if (
+      formData.maxParticipants &&
+      totalSeats > Number(formData.maxParticipants)
+    ) {
+      setTicketErrors({
+        [index]: `Total seats (${totalSeats}) exceed max participants (${formData.maxParticipants}).`,
+      });
+    } else {
+      setTicketErrors({});
+    }
+
+    //  field === "price" || field === "quantity" ? parseFloat(value) || 0 : value;
     setFormData((prev) => ({ ...prev, tickets: updatedTickets }));
   };
 
@@ -128,8 +152,25 @@ function AddEventTickets() {
   };
 
   // Validation
+  // const validateForm = () => {
+  //   const newErrors = {};
+  //   if (!formData.title) newErrors.title = "Event title is required";
+  //   if (!formData.category) newErrors.category = "Category is required";
+  //   if (!formData.bannerImage) newErrors.bannerImage = "Banner image is required";
+  //   if (!formData.venue) newErrors.venue = "Venue is required";
+  //   if (!formData.locality) newErrors.locality = "Address is required";
+  //   if (!formData.startDate) newErrors.startDate = "Start date is required";
+  //   if (!formData.endDate) newErrors.endDate = "End date is required";
+  //   if (!formData.description) newErrors.description = "Description is required";
+  //   if (!formData.images || formData.images.length === 0)
+  //     newErrors.images = "Please upload at least one event image";
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+  // Validation
   const validateForm = () => {
     const newErrors = {};
+
     if (!formData.title) newErrors.title = "Event title is required";
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.bannerImage) newErrors.bannerImage = "Banner image is required";
@@ -140,9 +181,25 @@ function AddEventTickets() {
     if (!formData.description) newErrors.description = "Description is required";
     if (!formData.images || formData.images.length === 0)
       newErrors.images = "Please upload at least one event image";
+
+    // 🧮 Calculate total seats from tickets
+    const totalSeats = formData.tickets.reduce(
+      (sum, ticket) => sum + (Number(ticket.quantity) || 0),
+      0
+    );
+
+    // Validation for total seats
+    if (formData.maxParticipants && totalSeats > Number(formData.maxParticipants)) {
+      newErrors.maxParticipants = `Total seats from tickets (${totalSeats}) cannot exceed maximum participants (${formData.maxParticipants}).`;
+      // toast.error(
+      //   `Total seats (${totalSeats}) exceed max participants (${formData.maxParticipants}).`
+      // );
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   // Submit Form
   const handleSubmit = async (e) => {
@@ -280,6 +337,14 @@ function AddEventTickets() {
           {/* Max Participants */}
           <Grid item xs={12} sm={6}>
             <InputLabel>No. of Seats</InputLabel>
+            {/* <TextField
+              fullWidth
+              type="number"
+              name="maxParticipants"
+              value={formData.maxParticipants}
+              onChange={handleChange}
+              placeholder="Enter max seats"
+            /> */}
             <TextField
               fullWidth
               type="number"
@@ -287,6 +352,8 @@ function AddEventTickets() {
               value={formData.maxParticipants}
               onChange={handleChange}
               placeholder="Enter max seats"
+              error={!!errors.maxParticipants}
+              helperText={errors.maxParticipants}
             />
           </Grid>
 
@@ -383,34 +450,39 @@ function AddEventTickets() {
               helperText={errors.endDate}
             />
           </Grid>
-
           {/* Tickets Section */}
           <Grid item xs={12}>
             <InputLabel variant="h6" sx={{ mb: 1 }}>
-              Tickets
+              Ticket Details
             </InputLabel>
+
             {formData.tickets.map((ticket, idx) => (
-              <Grid container spacing={2} key={idx} alignItems="center" sx={{ mb: 1 }}>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    placeholder="Ticket name"
-                    value={ticket.name}
-                    onChange={(e) =>
-                      handleTicketChange(idx, "name", e.target.value)
-                    }
-                  />
+              <Grid
+                container
+                spacing={2}
+                key={idx}
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  borderRadius: 2,
+                  // background: "#f8fafc",
+                }}
+              >
+                <Grid item xs={12}>
+                  <Typography fontWeight="bold" sx={{ mb: 1 }}>
+                    {ticket.name === "adult" ? "Adult Ticket" : "Child Ticket"}
+                  </Typography>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="number"
+                    label="Price (€)"
                     value={ticket.price}
-                    placeholder="Ticket Price (€)"
                     onChange={(e) =>
                       handleTicketChange(idx, "price", e.target.value)
                     }
-                    sx={inputStyle}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">€</InputAdornment>
@@ -418,34 +490,21 @@ function AddEventTickets() {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="number"
+                    label="Seats"
                     value={ticket.quantity}
-                    placeholder="No. of Seats"
                     onChange={(e) =>
                       handleTicketChange(idx, "quantity", e.target.value)
                     }
-                    sx={inputStyle}
                   />
-                </Grid>
-                <Grid item sm={2}>
-                  {formData.tickets.length > 1 && (
-                    <IconButton color="error" onClick={() => removeTicket(idx)}>
-                      <Remove />
-                    </IconButton>
-                  )}
-                  {idx === formData.tickets.length - 1 && (
-                    <IconButton color="primary" onClick={addTicket}>
-                      <Add />
-                    </IconButton>
-                  )}
                 </Grid>
               </Grid>
             ))}
           </Grid>
-
           {/* Banner Image */}
           <Grid item xs={12} sm={6}>
             <InputLabel required>Banner Image</InputLabel>
